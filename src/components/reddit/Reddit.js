@@ -29,6 +29,7 @@ class Reddit extends React.Component {
     const { selectedReddit, posts, isFetching, lastUpdated } = this.props;
     return (
       <div>
+        Feature
         <Picker
           value={selectedReddit}
           onChange={this.handleChange}
