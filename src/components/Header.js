@@ -9,7 +9,8 @@ const Header = () => {
   return (
     <div style={styles}>
       <Link to="/">HomePage</Link> | <Link to="/counter">Counter</Link> |{" "}
-      <Link to="/reddit">Reddit</Link>
+      <Link to="/product-list">Products</Link> | <Link to="/cart">Cart</Link> |{" "}
+      <Link to="/reddit">Reddit</Link> | <Link to="/map">Map</Link>
     </div>
   );
 };

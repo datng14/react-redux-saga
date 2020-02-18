@@ -3,7 +3,11 @@ import { Switch, Route } from "react-router-dom";
 import HomePage from "./home/HomePage";
 import Counter from "./counter/Counter";
 import Header from "./Header";
-import Reddit from "./reddit/Reddit";
+// import Reddit from "./reddit/Reddit";
+// import Cart from "./product/Cart";
+// import ProductList from "./product/ProductList";
+// import MapContainer from "./MapContainer";
+import MapManagement from "./MapManagement";
 
 function App() {
   return (
@@ -12,7 +16,10 @@ function App() {
       <Switch>
         <Route path="/" component={HomePage} exact />
         <Route path="/counter" component={Counter} />
-        <Route path="/reddit" component={Reddit} />
+        {/* <Route path="/cart" component={Cart} />
+        <Route path="/product-list" component={ProductList} />
+        <Route path="/reddit" component={Reddit} /> */}
+        <Route path="/map" component={MapManagement} />
       </Switch>
     </div>
   );

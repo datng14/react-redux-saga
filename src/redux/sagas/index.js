@@ -5,6 +5,7 @@ import {
   selectedRedditSelector,
   postsByRedditSelector
 } from "../../redux/reducers/selectors";
+// import * as productSaga from "./productSaga";
 
 export function fetchPostsApi(reddit) {
   return fetch(`https://www.reddit.com/r/${reddit}.json`)
@@ -43,7 +44,8 @@ export function* startup() {
 }
 
 export default function* root() {
-  yield fork(startup);
-  yield fork(nextRedditChange);
-  yield fork(invalidateReddit);
+  yield call[
+    // fork(productSaga.getAllProducts),
+    (fork(startup), fork(nextRedditChange), fork(invalidateReddit))
+  ];
 }
