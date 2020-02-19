@@ -8,9 +8,14 @@ const Header = () => {
   };
   return (
     <div style={styles}>
-      <Link to="/">HomePage</Link> | <Link to="/counter">Counter</Link> |{" "}
-      <Link to="/product-list">Products</Link> | <Link to="/cart">Cart</Link> |{" "}
-      <Link to="/reddit">Reddit</Link> | <Link to="/map">Map</Link>
+      <Link to="/">HomePage</Link> |{" "}
+      {/* <Link to="/counter">Counter</Link> |{" "} */}
+      {/* <Link to="/product-list">Products</Link> | <Link to="/cart">Cart</Link> |{" "} */}
+      {/* <Link to="/reddit">Reddit</Link> |  */}
+      <Link to="/map-api">MapAPI</Link> | <Link to="/map">Map</Link> |{" "}
+      <Link to="/auto-complete">AutoComplete</Link>
+      {/* <Link to="/test-map">TestMap</Link> */}
+      <Link to="/direction">Direction</Link>
     </div>
   );
 };
