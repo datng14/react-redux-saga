@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
-  position: relative;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   width: 400px;
-  padding: 20px;
+  padding: 10px 20px;
+  margin: 0 auto;
 `;
 
 class SearchBox extends Component {
@@ -48,7 +47,7 @@ class SearchBox extends Component {
     return (
       <Wrapper>
         <input
-          style={{ width: "100%" }}
+          style={{ width: "100%", padding: "6px 12px" }}
           ref={ref => {
             this.searchInput = ref;
           }}

@@ -1,21 +1,6 @@
 import React from "react";
-import GoogleMap from "./GoogleMap";
-// import Marker from "./Marker";
 import SearchBox from "./SearchBox";
-
-// const floatPanel = {
-//   position: "absolute",
-//   top: "10px",
-//   left: "25%",
-//   zIndex: 5,
-//   backgroundColor: "#fff",
-//   padding: "5px",
-//   border: "1px solid #999",
-//   textAlign: "center",
-//   fontFamily: "'Roboto','sans-serif'",
-//   lineHeight: "30px",
-//   paddingLeft: "10px"
-// };
+import GoogleMapReact from "google-map-react";
 
 class MapManagement extends React.Component {
   constructor(props) {
@@ -26,13 +11,14 @@ class MapManagement extends React.Component {
       mapApiLoaded: false,
       original: null,
       destination: null,
+      pickup: null,
       directionsService: null,
       directionsDisplay: null
     };
   }
 
   // Fit map to its bounds after the api is loaded
-  apiIsLoaded = (map, maps, places) => {
+  apiIsLoaded = (map, maps) => {
     this.setState({
       mapApi: maps,
       mapInstance: map,
@@ -40,11 +26,61 @@ class MapManagement extends React.Component {
       directionsService: new maps.DirectionsService(),
       directionsDisplay: new maps.DirectionsRenderer()
     });
+    // let marker = new this.state.mapApi.Marker({
+    //   position: { lat: 10.800476, lng: 106.652128 },
+    //   map: this.state.mapInstance
+    // });
+    // marker.setMap(this.state.mapInstance);
+    // this.moveMarker(marker, this.state.mapApi, this.state.mapInstance, 1);
+  };
+
+  moveMarker = (marker, mapApi, mapInstance, i) => {
+    // the first latlng is the inital location
+    let locations = [
+      [10.800977, 106.652078],
+      [10.800472, 106.652185],
+      [10.800441, 106.652503],
+      [10.800357, 106.653653],
+      [10.801291, 106.653818],
+      [10.801288, 106.654249],
+      [10.801162, 106.655639],
+      [10.801063, 106.656864],
+      [10.800954, 106.657885]
+    ];
+    //delayed so you can see it move
+    // for (let i = 0; i < locations.length; i++) {
+    let numDeltas = 100;
+    setTimeout(
+      () => {
+        let deltaLat = (locations[i][0] - locations[0][0]) / numDeltas;
+        let deltaLng = (locations[i][1] - locations[0][1]) / numDeltas;
+        locations[0][0] += deltaLat;
+        locations[0][1] += deltaLng;
+        marker.setPosition(new mapApi.LatLng(locations[i][0], locations[i][1]));
+        mapInstance.panTo(new mapApi.LatLng(locations[i][0], locations[i][1]));
+        i++;
+        if (i < locations.length - 1)
+          this.moveMarker(marker, mapApi, mapInstance, i);
+      },
+      3000,
+      marker,
+      mapApi,
+      mapInstance
+    );
+
+    // }
   };
 
   setOriginal = place => {
     this.setState({
       original: place[0]
+    });
+    this.handleGoogleMapApi();
+  };
+
+  setPickup = place => {
+    this.setState({
+      pickup: place[0]
     });
     this.handleGoogleMapApi();
   };
@@ -65,60 +101,67 @@ class MapManagement extends React.Component {
       directionsService,
       directionsDisplay
     } = this.state;
-    // let locations = [
-    //   ["Manly Beach", -33.80010128657071, 151.28747820854187, 2],
-    //   ["Bondi Beach", -33.890542, 151.274856, 4],
-    //   ["Coogee Beach", -33.923036, 151.259052, 5],
-    //   ["Maroubra Beach", -33.950198, 151.259302, 1],
-    //   ["Cronulla Beach", -34.028249, 151.157507, 3]
-    // ];
-    // let flightPath = new mapApi.Polyline({
-    //   path: [
-    //     // { lat: 10.801847, lng: 106.649211 },
-    //     // { lat: 10.800143, lng: 106.667788 },
-    //     // { lat: 10.790267, lng: 106.683558 }
-    //   ],
-    //   geodesic: true,
-    //   strokeColor: "#33BD4E",
-    //   strokeOpacity: 1,
-    //   strokeWeight: 5
-    // });
-    // flightPath.setMap(mapInstance);
-    // const directionsService = new mapApi.DirectionsService();
-    // const directionsDisplay = new mapApi.DirectionsRenderer();
-    if (directionsDisplay !== null) {
-      directionsDisplay.setMap(null);
-    }
-    // directionsDisplay.setDirections({ routes: [] });
-    // directionsDisplay.setMap(null);
 
-    // directionsDisplay.setMap(mapInstance);
-    // let infowindow = new mapApi.InfoWindow();
-
-    // let marker, i;
     let request = {
       travelMode: mapApi.TravelMode.DRIVING,
       origin: "",
       destination: ""
+      // waypoints: [],
+      // provideRouteAlternatives: true
     };
-
+    var iconBase = "http://localhost:3001/";
+    var icons = {
+      blue: iconBase + "blue.png",
+      red: iconBase + "red.png",
+      truck: iconBase + "red.png",
+      black: iconBase + "black.png"
+    };
     if (original !== null) {
       const { location } = original.geometry;
       request.origin = { lat: location.lat(), lng: location.lng() };
-      // var marker = new mapApi.Marker();
-      // marker.setMap(mapInstance);
-      // marker.setPosition(location);
     }
     if (destination !== null) {
       const { location } = destination.geometry;
-      request.destination = { lat: location.lat(), lng: location.lng() };
+      request.destination = destination.geometry;
     }
+    // if (pickup !== null) {
+    //   const { location } = pickup.geometry;
+    //   request.waypoints.push({
+    //     location: { lat: location.lat(), lng: location.lng() },
+    //     stopover: true
+    //   });
+    // }
+
     directionsService.route(request, (response, status) => {
-      console.log("status", status);
       if (status === "OK") {
-        directionsDisplay.setMap(mapInstance);
-        directionsDisplay.setDirections(response);
-        // flightPath.setMap(mapInstance);
+        // directionsDisplay.setMap(mapInstance);
+        if (original !== null) {
+          new mapApi.Marker({
+            position: original.geometry.location,
+            icon: icons.blue,
+            map: mapInstance
+          });
+        }
+        if (destination !== null) {
+          new mapApi.Marker({
+            position: destination.geometry.location,
+            icon: icons.blue,
+            map: mapInstance
+          });
+        }
+        if (original !== null && destination !== null) {
+          const routePolyline = new mapApi.Polyline({
+            path: response.routes[0].overview_path,
+            strokeColor: "green",
+            strokeWeigth: 2,
+            strokeOpacity: 2
+          });
+          routePolyline.setMap(mapInstance);
+          directionsDisplay.setDirections(response);
+        }
+        // const bounds = new this.state.mapApi.LatLngBounds();
+        // bounds.union(response.routes[0].bounds);
+        // mapInstance.fitBounds(bounds);
       }
     });
   };
@@ -126,9 +169,9 @@ class MapManagement extends React.Component {
   render() {
     const style = {
       width: "100%",
-      height: "90vh"
+      height: "80vh"
     };
-    const { places, mapApi, mapInstance, mapApiLoaded } = this.state;
+    const { mapApi, mapInstance, mapApiLoaded } = this.state;
     return (
       <div style={style}>
         {mapApiLoaded && (
@@ -139,6 +182,12 @@ class MapManagement extends React.Component {
               mapApi={mapApi}
               addPlace={this.setOriginal}
             />
+            {/* <SearchBox
+              placeholder="Pickup..."
+              map={mapInstance}
+              mapApi={mapApi}
+              addPlace={this.setPickup}
+            /> */}
             <SearchBox
               placeholder="To..."
               map={mapInstance}
@@ -147,32 +196,18 @@ class MapManagement extends React.Component {
             />
           </>
         )}
-        <GoogleMap
+        <GoogleMapReact
           defaultZoom={12}
-          defaultCenter={[10.800506, 106.652065]}
+          defaultCenter={[10.800977, 106.652078]}
           bootstrapURLKeys={{
             key: "AIzaSyCf08-veAl7V_yEzDjD5x2861kFtcpWmUo",
             libraries: ["places", "geometry"]
           }}
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) =>
-            this.apiIsLoaded(map, maps, places)
-          }
-        >
-          {/* onGoogleApiLoaded={this.handleGoogleMapApi} */}
-          {/* {places.length === 1 &&
-            places.map(place => (
-              <Marker
-                key={place.id}
-                text={place.text}
-                lat={place.geometry.location.lat()}
-                lng={place.geometry.location.lng()}
-              />
-            ))} */}
-        </GoogleMap>
+          onGoogleApiLoaded={({ map, maps }) => this.apiIsLoaded(map, maps)}
+        ></GoogleMapReact>
       </div>
     );
   }
 }
-
 export default MapManagement;
